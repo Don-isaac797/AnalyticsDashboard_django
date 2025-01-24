@@ -1,0 +1,121 @@
+
+
+{% extends 'app/base.html' %}
+
+{% load django_bootstrap5 %}
+
+
+{% block title %}Analytics{% endblock %}
+  
+{% block bootstrap5_content  %}
+<div class="analytics-example">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <form class="d-flex" role="search">
+      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search here ...">
+    </form>
+
+    
+    <div class="d-flex">
+      <div class="form-check form-switch me-3">
+        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" checked>
+        <label class="form-check-label" for="flexSwitchCheckChecked1">Summary Report</label>
+      </div>
+      <div class="form-check form-switch me-3">
+        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked2" checked>
+        <label class="form-check-label" for="flexSwitchCheckChecked2">Detailed Report</label>
+      </div>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked3" checked>
+        <label class="form-check-label" for="flexSwitchCheckChecked3">Excel Report</label>
+      </div>
+    </div> 
+  </div>
+
+
+
+    
+
+
+  <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2" ></div>
+    
+  <table class="table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>USER ID</th>
+      <th>LOG IMAGE</th>
+      <th>LOG VIDEO</th>
+      <th>CREATE DATE</th>
+      <th>MESSAGE</th>
+      <th>CAMERA ID</th>
+      <th>CAMERA LOCATION</th>
+      <th>ACTIONS</th>
+      <th>STATUS</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for item in analytics_data %}
+      <tr>
+          <td>{{ item.analytics_id }}</td>
+          <td>{{ item.user_id }}</td>
+          <td><img src ="http://40.177.97.101/logs/images/img.png" alt="Log Image" height="100" width="150"/></td>
+          <td>{{ item.log_video }}</td>
+          <td>{{ item.create_date }}</td>
+          <td>{{ item.message }}</td>
+          <td>{{ item.camera_id }}</td>
+          <td>{{ item.camera_location }}</td>
+          <td>{{ item.action }}</td>
+          <td>{{ item.status }}</td>
+        </tr>  
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="bd-example m-3 border-3 d-flex justify-content-end">
+    
+  <nav aria-label="Another pagination example">
+    <ul class="pagination  flex-wrap">
+      <li class="page-item">
+        <a class="page-link" href="#">Previous</a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item"><a class="page-link" href="#">4</a></li>
+      <li class="page-item"><a class="page-link" href="#">5</a></li>
+      <li class="page-item">
+        <a class="page-link" href="#">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+
+
+<!--<div class="bd-example m-0 border-0 ">
+    
+  <nav aria-label="Another pagination example">
+    <ul class="pagination pagination-lg flex-wrap">
+      <li class="page-item disabled">
+        <a class="page-link">Previous</a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item active" aria-current="page">
+        <a class="page-link" href="#">2</a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item">
+        <a class="page-link" href="#">Next</a>
+      </li>
+    </ul>
+  </nav>
+  
+</div>
+-->
+{% endblock %}  
+
+
+
+
+

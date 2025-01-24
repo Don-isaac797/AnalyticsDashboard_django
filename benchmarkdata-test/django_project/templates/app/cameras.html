@@ -1,0 +1,44 @@
+<!--
+Make sure that the data passed to the template (camera_data) uses the same keys as the variable names in the template. If the keys are different, you can use the key name in the template like this: {{ item['key_name'] }}.
+-->
+
+{% extends 'app/base.html' %}
+
+{% load django_bootstrap5 %}
+
+
+{% block title %}Cameras{% endblock %}
+
+{% block bootstrap5_content  %}
+<div class="cameras-example">
+  <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2"></div>
+    
+  <table class="table">
+    <thead>
+    <tr>
+      <th>CAMERA ID</th>
+      <th>STREAM URL</th>
+      <th>LOCATON</th>
+      <th>AI MODULE</th>
+      <th>ENABLED</th>
+      <th>LIVE</th>
+      <th>ACTIONS</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for item in camera_data %}
+      <tr>
+        <td>{{ c.camera_id }}</td>
+        <td>{{ c.stream_url }}</td>
+        <td>{{ c.location }}</td>
+        <td>{{ c.ai_module }}</td>
+        <td>{{ c.enabled }}</td>
+        <td>{{ c.live }}</td>
+        <td>{{ c.actions }}</td>
+    </tr>     
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}  
+

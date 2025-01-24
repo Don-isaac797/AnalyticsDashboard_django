@@ -1,0 +1,44 @@
+<!--
+Make sure that the data passed to the template (camera_data) uses the same keys as the variable names in the template. If the keys are different, you can use the key name in the template like this: {{ item['key_name'] }}.
+-->
+
+{% extends 'app/base.html' %}
+
+{% load django_bootstrap5 %}
+
+
+{% block title %}Subscription{% endblock %}
+
+{% block bootstrap5_content  %}
+<div class="subscription-example">
+  <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2"></div>
+    
+  <table class="table">
+    <thead>
+    <tr>
+      <th>USER ID</th>
+      <th>MACHINE ID</th>
+      <th>EXPIRY DATE</th>
+      <th>Ai.MODULES</th>
+      <th>CAMERA COUNT</th>
+      <th>ACIVE</th>
+      <th>ACTIONS</th>
+
+    </tr>
+    </thead>
+    <tbody>
+      {% for item in subscription_data %}
+      <tr>
+          <td>{{ item.user_id }}</td>
+          <td>{{ item.machine_id}}</td>
+          <td>{{ item.expiry_date}}</td>
+          <td>{{ item.ai_modules }}</td>
+          <td>{{ item.camera_count }}</td>
+          <td>{{ item.status }}</td>>
+          <td>{{ item.actions }}</td>
+          </tr>    
+      {% endfor %}
+    </tbody>
+  </table>
+ {% endblock %}  
+</div>

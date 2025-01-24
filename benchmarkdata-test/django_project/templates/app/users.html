@@ -1,0 +1,41 @@
+<!--
+Make sure that the data passed to the template (camera_data) uses the same keys as the variable names in the template. If the keys are different, you can use the key name in the template like this: {{ item['key_name'] }}.
+-->
+
+{% extends 'app/base.html' %}
+
+{% load django_bootstrap5 %}
+
+
+{% block title %}Users{% endblock %}
+
+{% block bootstrap5_content  %}
+<div class="users-example">
+  <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2"></div>
+    
+  <table class="table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Full Name</th>
+      <th>EMAIL</th>
+      <th>PERMISSION</th>
+      <th>STATUS</th>
+      <th>ACTIONS</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in subscription_data %}
+      <tr>
+          <td>{{ item.subscription_id }}</td>
+          <td>{{ item.full_name }}</td>
+          <td>{{ item.email }}</td>
+          <td>{{ item.permissions }}</td>
+          <td>{{ item.status }}</td>
+          <td>{{ item.actions }}</td>
+      </tr>    
+      {% endfor %}
+    </tbody>
+  </table>
+ {% endblock %}  
+</div>
