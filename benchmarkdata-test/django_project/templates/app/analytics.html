@@ -14,7 +14,7 @@
 
 <div class="analytics-example">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <form class="d-flex" role="search" id="searchForm" method="POST" action="{% url 'search' %}">
+    <form class="d-flex" role="search" id="searchForm">
       {% csrf_token %}
       <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search here ...">
       <button class="btn btn-outline-success" type="submit">Search</button>
@@ -41,6 +41,116 @@
     <div class="me-3">
       <label for="endDate" class="form-label">End Date</label>
       <input type="date" class="form-control" id="endDate">
+    </div>
+    <div class="me-3">
+      <button type="button" class="btn btn-primary" id="filterButton">Filter</button>
+    </div>
+    <script>
+      document.getElementById('filterButton').addEventListener('click', function() {
+        const startDateInput = document.getElementById('startDate').value;
+        const endDateInput = document.getElementById('endDate').value;
+      
+        // Ensure both dates are selected
+        if (!startDateInput || !endDateInput) {
+          alert('Please select both start and end dates.');
+          return;
+        }
+      
+        const startDate = new Date(startDateInput);
+        const endDate = new Date(endDateInput);
+      
+        filterTableByDateRange(startDate, endDate);
+      });
+      
+      function filterTableByDateRange(startDate, endDate) {
+        const rows = document.querySelectorAll('table tbody tr');
+        rows.forEach(row => {
+          const createDate = new Date(row.querySelector('.create-date').innerText);
+          if (createDate >= startDate && createDate <= endDate) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      }
+      </script>
+    <div class="me-3">
+      <label for="dateRange" class="form-label">Date Range</label>
+      <select class="form-select" id="dateRange">
+        <option value="" disabled selected>Select a date range</option>
+        <option value="this_week">This week</option>
+        <option value="this_month">This month</option>  
+        <option value="last_3_months">Last 3 months</option>
+        <option value="last_6_months">Last 6 months</option>
+        <option value="last_1_year">Last 1 year</option>
+      </select>
+      <script>
+        document.getElementById('dateRange').addEventListener('change', function() {
+          const dateRange = this.value;
+          const startDateInput = document.getElementById('startDate');
+          const endDateInput = document.getElementById('endDate');
+          const today = new Date();
+          let startDate, endDate;
+        
+          switch (dateRange) {
+            case 'this_week':
+              startDate = new Date(today.setDate(today.getDate() - today.getDay()));
+              endDate = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+              break;
+            case 'this_month':
+              startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+              endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+              break;
+            case 'last_3_months':
+              startDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
+              endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+              break;
+            case 'last_6_months':
+              startDate = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+              endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+              break;
+            case 'last_1_year':
+              startDate = new Date(today.getFullYear() - 1, today.getMonth() + 1, 1);
+              endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+              break;
+            default:
+              startDate = new Date();
+              endDate = new Date();
+          }
+        
+          startDateInput.value = startDate.toISOString().split('T')[0];
+          endDateInput.value = endDate.toISOString().split('T')[0];
+
+          filterTableByDateRange(startDate.getTime(), endDate.getTime());
+        });
+
+        document.getElementById('filterButton').addEventListener('click', function() {
+          const startDateInput = document.getElementById('startDate').value;
+          const endDateInput = document.getElementById('endDate').value;
+        
+          if (!startDateInput || !endDateInput) {
+            alert('Please select both start and end dates.');
+            return;
+          }
+        
+          const startDate = new Date(startDateInput).getTime();
+          const endDate = new Date(endDateInput).getTime();
+        
+          filterTableByDateRange(startDate, endDate);
+        });
+
+        function filterTableByDateRange(startDate, endDate) {
+          const rows = document.querySelectorAll('table tbody tr');
+          rows.forEach(row => {
+            const createDate = new Date(row.querySelector('.create-date').innerText).getTime();
+            if (createDate >= startDate && createDate <= endDate) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        }
+      </script>
     </div>
 
     <div class="form-check form-switch me-3">
@@ -151,7 +261,7 @@
           <td>{{ item.user_id }}</td>
           <td><img src ="http://40.177.97.101/logs/images/img.png" alt="Log Image" height="100" width="150" /></td> 
           <td>{{ item.log_video }}</td>
-          <td>{{ item.create_date }}</td>
+          <td class="create-date">{{ item.create_date }}</td>
           <td>{{ item.message }}</td>
           <td>{{ item.camera_id }}</td>
           <td>{{ item.camera_location }}</td>
@@ -187,8 +297,8 @@
 
 <div class="bd-example m-3 border-3 d-flex justify-content-end">
     
-  <nav aria-label="Another pagination example">
-    <ul class="pagination  flex-wrap">
+  <nav aria-label="Pagination example">
+    <ul class="pagination  flex-wrap" id="pagination-controls">
       <li class="page-item">
         <a class="page-link" href="#">Previous</a>
       </li>
@@ -203,6 +313,121 @@
     </ul>
   </nav>
 </div>
+
+<script>
+function fetchPage(page) {
+  const url = `/analytics-viewall?page=${page}&per_page=10&token=your_secure_token`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        data.data.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.id}</td>
+            <td>${item.user_id}</td>
+            <td><img src="${item.log_image}" alt="Log Image" height="100" width="150" /></td>
+            <td>${item.log_video}</td>
+            <td>${item.create_date}</td>
+            <td>${item.message}</td>
+            <td>${item.camera_id}</td>
+            <td>${item.camera_location}</td>
+            <td>${item.action}</td>
+            <td>${item.status}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        const paginationControls = document.getElementById('pagination-controls');
+        paginationControls.innerHTML = ''; // Clear existing pagination controls
+
+        if (data.has_prev) {
+          const prevItem = document.createElement('li');
+          prevItem.classList.add('page-item');
+          prevItem.innerHTML = `<a class="page-link" href="#" onclick="fetchPage(${data.prev_page})">Previous</a>`;
+          paginationControls.appendChild(prevItem);
+        } else {
+          const prevItem = document.createElement('li');
+          prevItem.classList.add('page-item', 'disabled');
+          prevItem.innerHTML = `<a class="page-link">Previous</a>`;
+          paginationControls.appendChild(prevItem);
+        }
+
+        for (let i = 1; i <= data.total_pages; i++) {
+          const pageItem = document.createElement('li');
+          pageItem.classList.add('page-item', data.current_page === i ? 'active' : '');
+          pageItem.innerHTML = `<a class="page-link" href="#" onclick="fetchPage(${i})">${i}</a>`;
+          paginationControls.appendChild(pageItem);
+        }
+
+        if (data.has_next) {
+          const nextItem = document.createElement('li');
+          nextItem.classList.add('page-item');
+          nextItem.innerHTML = `<a class="page-link" href="#" onclick="fetchPage(${data.next_page})">Next</a>`;
+          paginationControls.appendChild(nextItem);
+        } else {
+          const nextItem = document.createElement('li');
+          nextItem.classList.add('page-item', 'disabled');
+          nextItem.innerHTML = `<a class="page-link">Next</a>`;
+          paginationControls.appendChild(nextItem);
+        }
+      } else {
+        console.error('Error:', data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+  
+  // Fetch the first page on initial load
+fetchPage(1);
+</script>
+
+
+<!--
+<div class="bd-example m-3 border-3 d-flex justify-content-end">
+  <nav aria-label="Pagination example">
+    <ul class="pagination flex-wrap">
+      {% if lines.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ lines.previous_page_number }}">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Previous</a>
+      </li>
+      {% endif %}
+
+      {% for num in lines.paginator.page_range %}
+      {% if lines.number == num %}
+      <li class="page-item active">
+        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+      </li>
+      {% else %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+
+      {% if lines.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ lines.next_page_number }}">Next</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Next</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+-->
 
 
 
